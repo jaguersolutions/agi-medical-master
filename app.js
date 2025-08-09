@@ -25,6 +25,7 @@ const User = require('./models/User');
 const Module = require('./models/Module');
 const Subscription = require('./models/Subscription');
 const Equipment = require('./models/Equipment');
+const Role = require('./models/Role');
 
 // Basic Route
 app.get('/', (req, res) => {

@@ -24,9 +24,9 @@ const userSchema = new Schema({
         required: true
     },
     role: {
-        type: String,
-        enum: ['agi_admin', 'hospital_admin', 'hospital_user'],
-        default: 'hospital_user'
+        type: Schema.Types.ObjectId,
+        ref: 'Role',
+        required: true
     },
     createdAt: {
         type: Date,
