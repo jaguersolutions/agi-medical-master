@@ -79,16 +79,73 @@ npm run db:index
 ```
 This is especially important to run after a fresh database setup or before deploying a new version of the application.
 
-## Schema Overview
+## API Documentation
 
--   **Organization**: Represents a single entity like a hospital or clinic. It contains basic information and holds references to its `Users` and its `Subscription`.
--   **User**: Represents an individual user who can log in to the system. Each user belongs to one `Organization` and is assigned a specific `Role`.
--   **Role**: Defines a user role (e.g., 'doctor', 'technician') and contains a list of specific `permissions` for that role. This provides a flexible, centralized way to manage what users can do.
--   **Module**: Defines a type of medical equipment that can be subscribed to, such as 'Patient Monitor', 'Fetal Monitor', or 'ECG'.
--   **Subscription**: A crucial link between an `Organization` and the `Modules` it has access to. It specifies the quantity of each module type the organization has subscribed to.
--   **Equipment**: Represents a single, physical piece of medical hardware. Each piece of equipment has a unique `licenseKey`, is associated with an `Organization`, and corresponds to a specific `Module` type. Its `status` ('online' or 'offline') is tracked here.
+### Authentication Flow
+
+1.  **Register a new user:** Send a `POST` request to `/api/auth/register` to create a new user.
+2.  **Login:** Send a `POST` request to `/api/auth/login` with user credentials. The API will return a JSON Web Token (JWT).
+3.  **Send Authenticated Requests:** For all protected routes, include the JWT in the request header as follows:
+    ```
+    x-auth-token: <your_jwt_here>
+    ```
+
+### API Endpoints
+
+#### Authentication (`/api/auth`)
+
+-   **`POST /register`**
+    -   **Description:** Registers a new user.
+    -   **Access:** Public
+    -   **Body:** `{ "name": "John Doe", "email": "john@example.com", "password": "password123", "organizationId": "507f1f77bcf86cd799439011" }`
+    -   **Returns:** `{ "token": "..." }`
+
+-   **`POST /login`**
+    -   **Description:** Authenticates a user and returns a JWT.
+    -   **Access:** Public
+    -   **Body:** `{ "email": "john@example.com", "password": "password123" }`
+    -   **Returns:** `{ "token": "..." }`
+
+#### Equipment (`/api/equipment`)
+
+-   **`POST /`**
+    -   **Description:** Enrolls a new piece of equipment.
+    -   **Access:** Private (Requires 'enroll_equipment' permission)
+    -   **Headers:** `x-auth-token`
+    -   **Body:** `{ "licenseKey": "UNIQUE-LICENSE-KEY", "moduleType": "507f191e810c19729de860ea" }`
+    -   **Returns:** The new equipment object.
+
+-   **`GET /`**
+    -   **Description:** Gets all equipment for the user's organization.
+    -   **Access:** Private
+    -   **Headers:** `x-auth-token`
+    -   **Returns:** An array of equipment objects.
+
+-   **`PATCH /status/:id`**
+    -   **Description:** Updates the status of a specific piece of equipment.
+    -   **Access:** Private (Requires 'manage_equipment_status' permission)
+    -   **Headers:** `x-auth-token`
+    -   **Body:** `{ "status": "online" }`
+    -   **Returns:** The updated equipment object.
+
+#### Webhooks (`/api/webhooks`)
+
+-   **`POST /events`**
+    -   **Description:** Handles incoming events from external systems.
+    -   **Access:** Private (Requires API Key)
+    -   **Headers:** `x-api-key`
+    -   **Body:** `{ "event": "equipment_offline", "licenseKey": "UNIQUE-LICENSE-KEY" }`
+    -   **Returns:** A success or acknowledgement message.
 
 ## Changelog
+
+### v2.0.0 (Core API and Authentication) - YYYY-MM-DD
+
+-   Added user authentication with `bcrypt` password hashing and JSON Web Tokens (JWT).
+-   Implemented core API routes for `auth` and `equipment`.
+-   Added a webhook route to handle real-time events.
+-   Created authentication middleware to protect routes.
+-   Updated `app.js` to connect to the database and serve the new routes.
 
 ### v1.2.0 (Database Performance Indexing) - YYYY-MM-DD
 

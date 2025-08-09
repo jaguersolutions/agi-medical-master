@@ -1,59 +1,42 @@
 const express = require('express');
 const mongoose = require('mongoose');
-const { exec } = require('child_process');
+const config = require('config');
 
 // Load environment variables
-// require('dotenv').config(); // Uncomment when you have a .env file
+require('dotenv').config();
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || config.get('port') || 3000;
 
-// Middleware
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+// Connect to Database
+const MONGO_URI = process.env.MONGO_URI || config.get('mongoURI');
 
-// Database Connection
-// const MONGO_URI = process.env.MONGO_URI || 'mongodb://localhost:27017/agi_medical';
-// For now, we will not connect to a live DB until routes are created.
-// mongoose.connect(MONGO_URI)
-//     .then(() => console.log('MongoDB connected...'))
-//     .catch(err => console.log(err));
+const connectDB = async () => {
+    try {
+        await mongoose.connect(MONGO_URI);
+        console.log('MongoDB Connected...');
+    } catch (err) {
+        console.error(err.message);
+        // Exit process with failure
+        process.exit(1);
+    }
+};
+connectDB();
 
-// Import Mongoose Models
-const Organization = require('./models/Organization');
-const User = require('./models/User');
-const Module = require('./models/Module');
-const Subscription = require('./models/Subscription');
-const Equipment = require('./models/Equipment');
-const Role = require('./models/Role');
 
-// Basic Route
+// Init Middleware
+app.use(express.json({ extended: false }));
+
+
+// Define Routes
+app.use('/api/auth', require('./routes/api/auth'));
+app.use('/api/equipment', require('./routes/api/equipment'));
+app.use('/api/webhooks', require('./routes/api/webhooks'));
+
+
 app.get('/', (req, res) => {
-    res.send('Welcome to the AGI AI-MEDICAL API');
+    res.send('AGI AI-MEDICAL API is running');
 });
-
-// Placeholder for running Python scripts
-function runPythonScript(scriptPath, args, callback) {
-    const command = `python ${scriptPath} ${args.join(' ')}`;
-    exec(command, (error, stdout, stderr) => {
-        if (error) {
-            console.error(`exec error: ${error}`);
-            return callback(error, null);
-        }
-        if (stderr) {
-            console.error(`stderr: ${stderr}`);
-        }
-        callback(null, stdout);
-    });
-}
-
-// Example usage of runPythonScript (can be integrated into a route later)
-// runPythonScript('path/to/your/script.py', ['arg1', 'arg2'], (err, result) => {
-//     if (err) {
-//         return console.log('Error running python script');
-//     }
-//     console.log('Python script output:', result);
-// });
 
 
 app.listen(PORT, () => {
