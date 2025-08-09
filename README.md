@@ -53,20 +53,31 @@ The API is responsible for:
 │   ├── Subscription.js  # Schema for organization subscriptions
 │   └── Equipment.js     # Schema for physical equipment instances
 ├── scripts/
-│   └── seedRoles.js     # Script to populate the database with initial roles
+│   ├── seedRoles.js     # Script to populate the database with initial roles
+│   └── ensureIndexes.js # Script to create necessary database indexes
 ├── app.js               # Main application file (Express server setup)
 ├── package.json         # Project dependencies and scripts
 └── README.md            # This file
 ```
 
-## Database Seeding
+## Database Management
 
-To get started, you need to seed the database with the necessary user roles. This only needs to be done once.
+### Seeding
+To get started, you need to seed the database with the necessary user roles. This only needs to be done once per environment.
 
 ```bash
 npm run seed:roles
 ```
 This command will populate the `roles` collection with a default set of roles and permissions.
+
+### Indexing for Performance
+As the database grows, query performance becomes critical. We use MongoDB indexes to ensure that queries can be executed quickly without scanning the entire collection. A script has been created to ensure all necessary indexes are present. This script is idempotent, meaning it can be run safely at any time.
+
+Run the indexing script using the following command:
+```bash
+npm run db:index
+```
+This is especially important to run after a fresh database setup or before deploying a new version of the application.
 
 ## Schema Overview
 
@@ -78,6 +89,12 @@ This command will populate the `roles` collection with a default set of roles an
 -   **Equipment**: Represents a single, physical piece of medical hardware. Each piece of equipment has a unique `licenseKey`, is associated with an `Organization`, and corresponds to a specific `Module` type. Its `status` ('online' or 'offline') is tracked here.
 
 ## Changelog
+
+### v1.2.0 (Database Performance Indexing) - YYYY-MM-DD
+
+-   Added `scripts/ensureIndexes.js` to create necessary MongoDB indexes for performance at scale.
+-   Added `db:index` script to `package.json`.
+-   Updated `README.md` with documentation for the new indexing script.
 
 ### v1.1.0 (Role-Based Access Control) - YYYY-MM-DD
 
