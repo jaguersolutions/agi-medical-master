@@ -32,6 +32,10 @@ app.use(express.json({ extended: false }));
 app.use('/api/auth', require('./routes/api/auth'));
 app.use('/api/equipment', require('./routes/api/equipment'));
 app.use('/api/webhooks', require('./routes/api/webhooks'));
+app.use('/api/roles', require('./routes/api/roles'));
+app.use('/api/organizations', require('./routes/api/organizations'));
+app.use('/api/subscriptions', require('./routes/api/subscriptions'));
+app.use('/api/users', require('./routes/api/users'));
 
 
 app.get('/', (req, res) => {

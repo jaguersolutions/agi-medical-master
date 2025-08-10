@@ -160,7 +160,41 @@ The following endpoints manage the lifecycle of a piece of equipment.
     -   **Body:** `{ "event": "equipment_offline", "licenseKey": "UNIQUE-LICENSE-KEY" }`
     -   **Returns:** A success or acknowledgement message.
 
+---
+### Administrative Endpoints
+
+The following endpoints are for system administration and are typically restricted to `agi_admin` or `hospital_admin` roles.
+
+#### Role Management (`/api/roles`)
+
+-   **`GET /`**: Lists all available roles.
+-   **`POST /`**: Creates a new role. (Requires `manage_roles` permission).
+-   **`PUT /:id`**: Updates an existing role. (Requires `manage_roles` permission).
+
+#### Organization Management (`/api/organizations`)
+
+-   **`GET /`**: Lists all organizations. (Requires `manage_organizations` permission).
+-   **`POST /`**: Creates a new organization. (Requires `manage_organizations` permission).
+-   **`PUT /:id`**: Updates an organization's details. (Requires `manage_organizations` permission).
+
+#### Subscription Management (`/api/subscriptions`)
+
+-   **`POST /`**: Creates or updates a subscription for an organization. (Requires `manage_subscriptions` permission).
+-   **`GET /organization/:org_id`**: Gets the subscription for a specific organization.
+
+#### User Management (`/api/users`)
+
+-   **`GET /`**: Lists all users within the admin's own organization. (Requires `manage_users` permission).
+-   **`PUT /:id/role`**: Updates the role for a specific user within the admin's organization. (Requires `manage_users` permission).
+
+
 ## Changelog
+
+### v2.2.0 (Administrative Routes) - YYYY-MM-DD
+
+-   Added CRUD routes for managing Roles, Organizations, Subscriptions, and Users.
+-   Created a generic `authorize` middleware for handling permission-based access control.
+-   Updated role seeder to include necessary administrative permissions.
 
 ### v2.1.0 (Advanced Equipment Management) - YYYY-MM-DD
 
