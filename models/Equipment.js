@@ -16,6 +16,10 @@ const equipmentSchema = new Schema({
         type: String,
         trim: true
     },
+    location: {
+        type: String,
+        trim: true
+    },
     licenseKey: {
         type: String,
         required: true,

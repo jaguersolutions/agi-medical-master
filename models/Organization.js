@@ -9,8 +9,19 @@ const organizationSchema = new Schema({
     },
     address: {
         type: String,
-        required: true
+        required: true,
+        deprecated: true
     },
+    locations: [{
+        name: {
+            type: String,
+            required: true
+        },
+        address: {
+            type: String,
+            required: true
+        }
+    }],
     users: [{
         type: Schema.Types.ObjectId,
         ref: 'User'

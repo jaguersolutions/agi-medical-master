@@ -3,6 +3,8 @@ const router = express.Router();
 const auth = require('../../middleware/auth');
 const authorize = require('../../middleware/authorize');
 const { check, validationResult } = require('express-validator');
+const logAction = require('../../utils/auditLogger');
+const User = require('../../models/User');
 
 const Role = require('../../models/Role');
 
@@ -53,6 +55,17 @@ router.post(
             });
 
             await role.save();
+
+            const adminUser = await User.findById(req.user.id);
+            await logAction({
+                user: req.user.id,
+                organization: adminUser.organization,
+                action: 'create_role',
+                targetType: 'Role',
+                targetId: role.id,
+                details: { name: role.name }
+            });
+
             res.json(role);
         } catch (err) {
             console.error(err.message);
@@ -90,11 +103,26 @@ router.put(
                 return res.status(404).json({ msg: 'Role not found' });
             }
 
+            const originalRole = await Role.findById(req.params.id);
+
             role = await Role.findByIdAndUpdate(
                 req.params.id,
                 { $set: roleFields },
                 { new: true }
             );
+
+            const adminUser = await User.findById(req.user.id);
+            await logAction({
+                user: req.user.id,
+                organization: adminUser.organization,
+                action: 'update_role',
+                targetType: 'Role',
+                targetId: role.id,
+                details: {
+                    name: role.name,
+                    previous_name: originalRole.name // Example of logging a change
+                }
+            });
 
             res.json(role);
         } catch (err) {
