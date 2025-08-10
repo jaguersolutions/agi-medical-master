@@ -9,6 +9,7 @@ const roles = [
         name: 'agi_admin',
         description: 'Super administrator for the entire system.',
         permissions: [
+            'manage_roles',
             'manage_organizations',
             'manage_subscriptions',
             'create_modules',
