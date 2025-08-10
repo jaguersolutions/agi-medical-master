@@ -2,5 +2,6 @@
   "mongoURI": "mongodb://localhost:27017/agi_medical",
   "jwtSecret": "your_jwt_secret_key_that_is_long_and_random",
   "jwtExpiration": "7d",
-  "webhookApiKey": "a_very_secret_api_key_for_webhooks"
+  "webhookApiKey": "a_very_secret_api_key_for_webhooks",
+  "discoveryApiKey": "a_different_secret_key_for_discovery_agents"
 }

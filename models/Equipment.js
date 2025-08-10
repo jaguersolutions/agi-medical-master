@@ -12,6 +12,10 @@ const equipmentSchema = new Schema({
         ref: 'Module',
         required: true
     },
+    name: {
+        type: String,
+        trim: true
+    },
     licenseKey: {
         type: String,
         required: true,
@@ -19,7 +23,7 @@ const equipmentSchema = new Schema({
     },
     status: {
         type: String,
-        enum: ['online', 'offline'],
+        enum: ['online', 'offline', 'pending_approval'],
         default: 'offline'
     },
     enrolledAt: {

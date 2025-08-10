@@ -108,11 +108,20 @@ This is especially important to run after a fresh database setup or before deplo
 
 #### Equipment (`/api/equipment`)
 
+The following endpoints manage the lifecycle of a piece of equipment.
+
+-   **`POST /discover`**
+    -   **Description:** Used by an on-site discovery agent to report a new, un-enrolled device.
+    -   **Access:** Private (Requires Discovery Key)
+    -   **Headers:** `x-discovery-key`
+    -   **Body:** `{ "licenseKey": "DEVICE-SERIAL-NUMBER", "organization": "...", "moduleType": "..." }`
+    -   **Returns:** The new equipment object with status `pending_approval`.
+
 -   **`POST /`**
-    -   **Description:** Enrolls a new piece of equipment.
+    -   **Description:** Manually enrolls a new piece of equipment.
     -   **Access:** Private (Requires 'enroll_equipment' permission)
     -   **Headers:** `x-auth-token`
-    -   **Body:** `{ "licenseKey": "UNIQUE-LICENSE-KEY", "moduleType": "507f191e810c19729de860ea" }`
+    -   **Body:** `{ "licenseKey": "...", "moduleType": "...", "name": "ICU Monitor 3" }`
     -   **Returns:** The new equipment object.
 
 -   **`GET /`**
@@ -121,8 +130,22 @@ This is especially important to run after a fresh database setup or before deplo
     -   **Headers:** `x-auth-token`
     -   **Returns:** An array of equipment objects.
 
+-   **`PUT /:id`**
+    -   **Description:** Updates the details of a specific piece of equipment.
+    -   **Access:** Private (Requires 'enroll_equipment' permission)
+    -   **Headers:** `x-auth-token`
+    -   **Body:** `{ "name": "New Name", "licenseKey": "NEW-LICENSE", "moduleType": "..." }`
+    -   **Returns:** The updated equipment object.
+
+-   **`PATCH /:id/approve`**
+    -   **Description:** Approves a device that is `pending_approval`.
+    -   **Access:** Private (Requires 'enroll_equipment' permission)
+    -   **Headers:** `x-auth-token`
+    -   **Body:** `{ "name": "Formally Approved Name", "licenseKey": "..." }`
+    -   **Returns:** The updated equipment object with status `offline`.
+
 -   **`PATCH /status/:id`**
-    -   **Description:** Updates the status of a specific piece of equipment.
+    -   **Description:** Updates the online/offline status of a specific piece of equipment.
     -   **Access:** Private (Requires 'manage_equipment_status' permission)
     -   **Headers:** `x-auth-token`
     -   **Body:** `{ "status": "online" }`
@@ -138,6 +161,14 @@ This is especially important to run after a fresh database setup or before deplo
     -   **Returns:** A success or acknowledgement message.
 
 ## Changelog
+
+### v2.1.0 (Advanced Equipment Management) - YYYY-MM-DD
+
+-   Enhanced the `Equipment` schema and routes to support a full device lifecycle.
+-   Added an auto-discovery endpoint (`POST /api/equipment/discover`) for automated device reporting.
+-   Added an approval endpoint (`PATCH /api/equipment/:id/approve`) to formally enroll discovered devices.
+-   Added a general update endpoint (`PUT /api/equipment/:id`) for modifying equipment details.
+-   Updated manual enrollment to include a `name` field.
 
 ### v2.0.0 (Core API and Authentication) - YYYY-MM-DD
 
