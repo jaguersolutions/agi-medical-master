@@ -174,8 +174,9 @@ The following endpoints are for system administration and are typically restrict
 #### Organization Management (`/api/organizations`)
 
 -   **`GET /`**: Lists all organizations. (Requires `manage_organizations` permission).
--   **`POST /`**: Creates a new organization. (Requires `manage_organizations` permission).
--   **`PUT /:id`**: Updates an organization's details. (Requires `manage_organizations` permission).
+-   **`POST /`**: Creates a new organization. Can include `locations` and `branding` objects in the body. (Requires `manage_organizations` permission).
+-   **`PUT /:id`**: Updates an organization's details, including `locations` and `branding`. (Requires `manage_organizations` permission).
+-   **`GET /my/branding`**: Gets the branding configuration for the logged-in user's organization.
 
 #### Subscription Management (`/api/subscriptions`)
 
@@ -187,8 +188,38 @@ The following endpoints are for system administration and are typically restrict
 -   **`GET /`**: Lists all users within the admin's own organization. (Requires `manage_users` permission).
 -   **`PUT /:id/role`**: Updates the role for a specific user within the admin's organization. (Requires `manage_users` permission).
 
+---
+### Reporting Endpoints
+
+-   **`GET /api/reports/equipment`**: Generates a report of equipment.
+    -   **Access:** Private
+    -   **Query Params:** `?organizationId=...&location=...&status=...`
+    -   **Returns:** An array of equipment objects matching the filter.
+
+-   **`GET /api/reports/audit`**: Generates a user audit trail report.
+    -   **Access:** Private (Requires `manage_users` or `manage_organizations` permission)
+    -   **Query Params:** `?userId=...&action=...&startDate=...&endDate=...`
+    -   **Returns:** An array of audit log entries.
+
+-   **`GET /api/reports/summary`**: Generates a high-level system summary.
+    -   **Access:** Private (Requires `view_all_data` permission)
+    -   **Returns:** An object with system-wide statistics.
+
 
 ## Changelog
+
+### v2.4.0 (Whitelabeling Support) - YYYY-MM-DD
+
+-   Added `branding` object to the `Organization` schema to store company-specific names, logos, and color schemes.
+-   Updated Organization management routes to allow `agi_admin` to configure branding.
+-   Added a new `GET /api/organizations/my/branding` endpoint for clients to fetch their branding configuration.
+
+### v2.3.0 (Reporting and Auditing) - YYYY-MM-DD
+
+-   Added `locations` to the `Organization` schema and a `location` field to the `Equipment` schema.
+-   Created a new `AuditLog` schema and utility for tracking user actions.
+-   Integrated audit logging into key administrative routes.
+-   Built a new `/api/reports` endpoint with equipment, audit, and system summary reports.
 
 ### v2.2.0 (Administrative Routes) - YYYY-MM-DD
 

@@ -36,6 +36,7 @@ app.use('/api/roles', require('./routes/api/roles'));
 app.use('/api/organizations', require('./routes/api/organizations'));
 app.use('/api/subscriptions', require('./routes/api/subscriptions'));
 app.use('/api/users', require('./routes/api/users'));
+app.use('/api/reports', require('./routes/api/reports'));
 
 
 app.get('/', (req, res) => {

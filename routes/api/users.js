@@ -3,6 +3,7 @@ const router = express.Router();
 const auth = require('../../middleware/auth');
 const authorize = require('../../middleware/authorize');
 const { check, validationResult } = require('express-validator');
+const logAction = require('../../utils/auditLogger');
 
 const User = require('../../models/User');
 const Role = require('../../models/Role');
@@ -77,8 +78,22 @@ router.put(
                 return res.status(403).json({ msg: 'Forbidden: Cannot assign AGI admin role.' });
             }
 
+            const oldRoleId = userToUpdate.role;
             userToUpdate.role = roleId;
             await userToUpdate.save();
+
+            await logAction({
+                user: req.user.id,
+                organization: adminUser.organization,
+                action: 'update_user_role',
+                targetType: 'User',
+                targetId: userToUpdate.id,
+                details: {
+                    updatedUserId: userToUpdate.id,
+                    previousRoleId: oldRoleId,
+                    newRoleId: roleId
+                }
+            });
 
             res.json(await User.findById(userIdToUpdate).select('-password').populate('role', ['name']));
 

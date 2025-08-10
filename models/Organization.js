@@ -9,8 +9,19 @@ const organizationSchema = new Schema({
     },
     address: {
         type: String,
-        required: true
+        required: true,
+        deprecated: true
     },
+    locations: [{
+        name: {
+            type: String,
+            required: true
+        },
+        address: {
+            type: String,
+            required: true
+        }
+    }],
     users: [{
         type: Schema.Types.ObjectId,
         ref: 'User'
@@ -18,6 +29,16 @@ const organizationSchema = new Schema({
     subscription: {
         type: Schema.Types.ObjectId,
         ref: 'Subscription'
+    },
+    branding: {
+        companyName: { type: String, trim: true },
+        logoUrl: { type: String, trim: true },
+        colorScheme: {
+            primary: { type: String, trim: true },
+            secondary: { type: String, trim: true },
+            accent: { type: String, trim: true },
+            text: { type: String, trim: true }
+        }
     },
     createdAt: {
         type: Date,
