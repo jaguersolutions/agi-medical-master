@@ -174,8 +174,9 @@ The following endpoints are for system administration and are typically restrict
 #### Organization Management (`/api/organizations`)
 
 -   **`GET /`**: Lists all organizations. (Requires `manage_organizations` permission).
--   **`POST /`**: Creates a new organization. (Requires `manage_organizations` permission).
--   **`PUT /:id`**: Updates an organization's details. (Requires `manage_organizations` permission).
+-   **`POST /`**: Creates a new organization. Can include `locations` and `branding` objects in the body. (Requires `manage_organizations` permission).
+-   **`PUT /:id`**: Updates an organization's details, including `locations` and `branding`. (Requires `manage_organizations` permission).
+-   **`GET /my/branding`**: Gets the branding configuration for the logged-in user's organization.
 
 #### Subscription Management (`/api/subscriptions`)
 
@@ -206,6 +207,12 @@ The following endpoints are for system administration and are typically restrict
 
 
 ## Changelog
+
+### v2.4.0 (Whitelabeling Support) - YYYY-MM-DD
+
+-   Added `branding` object to the `Organization` schema to store company-specific names, logos, and color schemes.
+-   Updated Organization management routes to allow `agi_admin` to configure branding.
+-   Added a new `GET /api/organizations/my/branding` endpoint for clients to fetch their branding configuration.
 
 ### v2.3.0 (Reporting and Auditing) - YYYY-MM-DD
 

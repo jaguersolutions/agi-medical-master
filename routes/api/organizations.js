@@ -25,7 +25,7 @@ router.post(
             return res.status(400).json({ errors: errors.array() });
         }
 
-        const { name, address } = req.body;
+        const { name, address, locations, branding } = req.body;
 
         try {
             let organization = await Organization.findOne({ name });
@@ -33,10 +33,11 @@ router.post(
                 return res.status(400).json({ errors: [{ msg: 'Organization already exists' }] });
             }
 
-            organization = new Organization({
-                name,
-                address
-            });
+            const orgFields = { name, address };
+            if (locations) orgFields.locations = locations;
+            if (branding) orgFields.branding = branding;
+
+            organization = new Organization(orgFields);
 
             await organization.save();
             res.json(organization);
@@ -54,6 +55,29 @@ router.get('/', [auth, authorize('manage_organizations')], async (req, res) => {
     try {
         const organizations = await Organization.find().sort({ createdAt: -1 });
         res.json(organizations);
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Server Error');
+    }
+});
+
+const User = require('../../models/User');
+
+// @route   GET api/organizations/my/branding
+// @desc    Get branding for the current user's organization
+// @access  Private
+router.get('/my/branding', auth, async (req, res) => {
+    try {
+        const user = await User.findById(req.user.id).populate({
+            path: 'organization',
+            select: 'branding'
+        });
+
+        if (!user || !user.organization) {
+            return res.status(404).json({ msg: 'Organization not found for this user' });
+        }
+
+        res.json(user.organization.branding || {});
     } catch (err) {
         console.error(err.message);
         res.status(500).send('Server Error');
@@ -81,11 +105,13 @@ router.get('/:id', [auth, authorize('manage_organizations')], async (req, res) =
 // @desc    Update an organization
 // @access  Private (agi_admin)
 router.put('/:id', [auth, authorize('manage_organizations')], async (req, res) => {
-    const { name, address } = req.body;
+    const { name, address, locations, branding } = req.body;
 
     const orgFields = {};
     if (name) orgFields.name = name;
     if (address) orgFields.address = address;
+    if (locations) orgFields.locations = locations;
+    if (branding) orgFields.branding = branding;
 
     try {
         let organization = await Organization.findById(req.params.id);
